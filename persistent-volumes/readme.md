@@ -162,3 +162,25 @@ tmpfs                          4987368       0    4987368   0% /proc/acpi
 tmpfs                          4987368       0    4987368   0% /proc/scsi
 tmpfs                          4987368       0    4987368   0% /sys/firmware
 ```
+* check to make sure nginx web server is running
+```
+curl worker2.localdomain:32443
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx/1.17.10</center>
+</body>
+</html>
+```
+
+**NOTE** To get the port the nginx server is runnig on, run the following command ( 80:32443 )
+```
+kubectl get all -o wide
+NAME                           READY   STATUS    RESTARTS   AGE     IP            NODE                  NOMINATED NODE   READINESS GATES
+pod/mynginx-58854674df-vnrgp   1/1     Running   0          9m18s   172.17.2.17   worker2.localdomain   <none>           <none>
+
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE    SELECTOR
+service/kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          4d1h   <none>
+service/mynginx      NodePort    10.111.183.18   <none>        80:32443/TCP     4d     run=nginx
+```
