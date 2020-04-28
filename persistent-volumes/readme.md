@@ -70,7 +70,7 @@ NAME      STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 pv-nfs1   Bound    pv-nfs1   5Gi        RWX            manual         14s
 ```
 
-* Create the nginx yaml file
+* Create the nginx yaml file, note the pvc volume **pv-nfs1**
 ```
 apiVersion: apps/v1
 kind: Deployment
@@ -91,7 +91,7 @@ spec:
       volumes:
       - name: www
         persistentVolumeClaim:
-          **claimName: pv-nfs1**
+          claimName: pv-nfs1
       containers:
       - image: nginx
         name: nginx
