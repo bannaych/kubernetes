@@ -16,7 +16,7 @@ kubectl get pvc
 No resources found in default namespace.
 ```
 
-* Create the Persistent volume
+* Create the yaml file
 ```
 apiVersion: v1
 kind: PersistentVolume
@@ -33,4 +33,69 @@ spec:
   nfs:
     server: 192.168.0.240
     path: "/mypool/data1"
+```
+
+* Create the PV
+```
+kubectl create -f nfspv.yaml
+persistentvolume/pv-nfs1 created
+
+kubectl get pv
+NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+pv-nfs1   5Gi        RWX            Retain           Available           manual                  14s
+```
+
+* Create the PVC yaml file
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-nfs1
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+```
+
+* Create the PVC
+```
+kubectl create -f nfs-pvc.yaml
+persistentvolumeclaim/pv-nfs1 created
+
+kubectl get pvc
+NAME      STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+pv-nfs1   Bound    pv-nfs1   5Gi        RWX            manual         14s
+```
+
+* Create the nginx yaml file
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: mynginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx
+  template:
+    metadata:
+      labels:
+        run: nginx
+    spec:
+      volumes:
+      - name: www
+        persistentVolumeClaim:
+          **claimName: pv-nfs1**
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
 ```
