@@ -1,0 +1,4 @@
+  cat /etc/iscsi/initiatorname.iscsi
+   58  iscsiadm -m discovery -t st -p 192.168.150.120
+   59  iscsiadm -m node --targetname  iqn.2010-06.com.purestorage:flasharray.376e79f0bff4a4d3 -p 192.168.150.120 --login
+  130  history|grep iscsi
