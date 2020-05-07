@@ -248,7 +248,7 @@ spec:
              mountPath: "/dev/shm"
            - name: storage
              mountPath: "/ORCL"
-           - name: storage
+           - name: log
              mountPath: "/home/oracle/setup/log"
         env:
           - name: DB_SID
