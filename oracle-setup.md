@@ -139,7 +139,7 @@ tmpfs                                           4084204        0   4084204   0% 
 oracle     174     1  0 01:30 ?        00:00:00 ora_pmon_ORCL
 oracle     946   921  0 02:02 pts/0    00:00:00 grep --color=auto pmon
 
-# CD $ORACLE_HOME
+# cd $ORACLE_HOME
 
 [oracle@database-7544cd4df7-d4hm4 dbhome_1]$ sqlplus / as sysdba
 
