@@ -181,3 +181,12 @@ ORCL
 database-7544cd4df7-d4hm4
 
 ```
+
+* Stop the database
+```
+kubectl scale -n ora deployment database --replicas=0
+```
+* start the instance
+```
+kubectl scale -n ora deployment database --replicas=1
+```
