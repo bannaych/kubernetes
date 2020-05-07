@@ -1,89 +1,82 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oracle12c
-#  namespace: oracle-namespace
+  name: database
+  namespace: ora
   labels:
-    app: oracle12c
+    app: database
     version: 12.1.0.2
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
-      app: oracle12c
+      app: database
       version: 12.1.0.2
   template:
     metadata:
-      name: oracle12c
+      name: database
       labels:
-        app: oracle12c
+        app: database
         version: 12.1.0.2
     spec:
+      securityContext:
+        fsGroup: 54321
       volumes:
-      - name: oravol
-        persistentVolumeClaim:
-          claimName: pv-nfs
+        - name: dshm
+          emptyDir:
+            medium: Memory
+        - name: storage
+          persistentVolumeClaim:
+            claimName: oravol
+        - name: log
+          persistentVolumeClaim:
+            claimName: oralog
       # add your volume mount for your persistent storage here
       containers:
       - name: database
         command:
         - /home/oracle/setup/dockerInit.sh
         image: store/oracle/database-enterprise:12.2.0.1
+        #image: container-registry.oracle.com/database/enterprise:12.1.0.2
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            memory: 2Gi
+            memory: 6Gi
         ports:
-        - containerPort: 1521
-          hostPort: 1521
+          - containerPort: 1521
+            hostPort: 1521
         volumeMounts:
-          - mountPath: /u01
-            name: oravol
-          # add your persistent storage for DB files here
+           - name: dshm
+             mountPath: "/dev/shm"
+           - name: storage
+             mountPath: "/ORCL"
+           - name: storage
+             mountPath: "/home/oracle/setup/log"
         env:
           - name: DB_SID
-            valueFrom:
-              configMapKeyRef:
-                name: oradb #Read from a configmap called oradb
-                key: DB_SID #Read the key call DB_SID
+            value: ORCL
           - name: DB_PDB
-            valueFrom:
-              configMapKeyRef:
-                name: oradb #Read from a configmap called oradb
-                key: DB_PDB #Read the key call DB_PDB
+            value: OraPdb
           - name: DB_PASSWD
-            valueFrom:
-              configMapKeyRef:
-                name: oradb #Read from a configmap called oradb
-                key: DB_PASSWD #Read the key call DB_PASSWD
+            value: 1mflpw2r
           - name: DB_DOMAIN
-            valueFrom:
-              configMapKeyRef:
-                name: oradb #Read from a configmap called oradb
-                key: DB_DOMAIN #Read the key call DB_DOMAIN
+            value: my.domain.com
           - name: DB_BUNDLE
-            valueFrom:
-              configMapKeyRef:
-                name: oradb #Read from a configmap called oradb
-                key: DB_BUNDLE #Read the key call DB_BUNDLE
+            value: basic
           - name: DB_MEMORY
-            valueFrom:
-              configMapKeyRef:
-                name: oradb #Read from a configmap called oradb
-                key: DB_MEMORY #Read the key call DB_MEMORY
+            value: 5g
       imagePullSecrets:
       - name: oracle
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: oracle12c
-#  namespace: oracle-namespace
+  name: database
+  namespace: ora
 spec:
   selector:
-    app: oracle12c
+    app: database
     version: 12.1.0.2
-  type: NodePort
   ports:
   - protocol: TCP
     port: 1521
