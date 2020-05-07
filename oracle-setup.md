@@ -23,36 +23,16 @@ spec:
  storageClassName: pure-block
  ```
  ```
- kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: oralog
-  namespace: ora
-  labels:
-    app: oracle12c
-spec:
- accessModes:
- - ReadWriteOnce
- resources:
-  requests:
-   storage: 20Gi
- storageClassName: pure-block
- ```
- ```
  # kubectl create -f oravol.yaml
  persistentvolumeclaim/oravol created
- 
- # kubectl create -f oralog.yaml
- persistentvolumeclaim/oralog created
+
  
 kubectl get pvc -n ora
 NAME     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 oralog   Bound    pvc-89bdc6ad-a5ba-4041-bb9c-09d0b73900c7   20Gi       RWO            pure-block     27m
-oravol   Bound    pvc-a0e607f3-08e6-4b7c-89dd-4b565baf5f0d   20Gi       RWO            pure-block     3h10m
 
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM             STORAGECLASS   REASON   AGE
 pvc-89bdc6ad-a5ba-4041-bb9c-09d0b73900c7   20Gi       RWO            Delete           Bound    ora/oralog        pure-block              28m
-pvc-a0e607f3-08e6-4b7c-89dd-4b565baf5f0d   20Gi       RWO            Delete           Bound    ora/oravol        pure-block              3h10m
  ```
  
 * Create the Oracle namespace
