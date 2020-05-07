@@ -192,6 +192,9 @@ kubectl scale -n ora deployment database --replicas=1
 ```
 
 # Oracle yaml file
+
+NOTE: The securityContext is the Pod Security Context, it supports setting an fsGroup, which allows you to set the group ID that owns the volume, and thus who can write to it.  If you dont add this you will get permission errors when trying to write to separate volume for logs
+
 ```
 apiVersion: apps/v1
 kind: Deployment
@@ -215,7 +218,7 @@ spec:
         version: 12.1.0.2
     spec:
       securityContext:
-        fsGroup: 54321
+        fsGroup: 50000
       volumes:
         - name: dshm
           emptyDir:
