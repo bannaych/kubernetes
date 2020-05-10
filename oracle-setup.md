@@ -10,8 +10,8 @@ My next blog will demonstrate the  power or Pure Storage snapshots and cloning t
 
 |Role|FQDN|IP|OS|RAM|CPU|K8 Ver
 |----|----|----|----|----|----|---|
-|Master|master.localdomain.com|192.168.111.231|Ubuntu 18.04|5G|3|18.1
-|Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|18.1
+|Master|master.localdomain.com|192.168.111.231|Ubuntu 18.04|5G|3|1.18
+|Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|1.18
 
 # Install PSO
 
