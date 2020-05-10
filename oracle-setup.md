@@ -180,4 +180,4 @@ NOTE: The securityContext is the Pod Security Context, it supports setting an fs
 ```     
         
 * refer to the oracle.yaml file on my github
-
+https://github.com/bannaych/kubernetes/blob/master/oracle.yaml
