@@ -8,16 +8,20 @@ My next blog will demonstrate the  power or Pure Storage snapshots and cloning t
 
 # Environment
 
-|Role|FQDN|IP|OS|RAM|CPU|
-|----|----|----|----|----|----|
-|Master|master.localdomain.com|192.168.111.231|Ubuntu 18.04|5G|3|
-|Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|
+|Role|FQDN|IP|OS|RAM|CPU|K8 Ver
+|----|----|----|----|----|----|---|
+|Master|master.localdomain.com|192.168.111.231|Ubuntu 18.04|5G|3|18.1
+|Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|18.1
 
 # Install PSO
 
-- Install helm ( 
+- Install helm 3
 ```
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+# curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+# ./get_helm.sh
+
+```
+
 
 In this example, we will use an separate Oracle namespace to configure Oracle
 this is not mandatory, however it easier to manage when you have multiple application and pods running 
