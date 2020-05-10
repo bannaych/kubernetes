@@ -14,10 +14,10 @@ My next blog will demonstrate the  power or Pure Storage snapshots and cloning t
 |Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|1.18
 
 ```
-# kubectl get nodes
-NAME      STATUS   ROLES    AGE    VERSION
-master    Ready    master   4d4h   v1.18.2
-worker1   Ready    <none>   4d4h   v1.18.2
+kubectl get nodes -o wide
+NAME      STATUS   ROLES    AGE    VERSION   INTERNAL-IP       EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+master    Ready    master   4d4h   v1.18.2   192.168.111.231   <none>        Ubuntu 18.04.1 LTS   4.15.0-29-generic   docker://19.3.6
+worker1   Ready    <none>   4d4h   v1.18.2   192.168.111.232   <none>        Ubuntu 18.04.1 LTS   4.15.0-99-generic   docker://19.3.6
 ```
 # Install PSO
 
