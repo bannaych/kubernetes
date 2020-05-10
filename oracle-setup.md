@@ -102,7 +102,7 @@ statefulset.apps/pure-provisioner   1/1     4d4h
 # Configure the Oracle 12c Deployment 
 
 
-- Create the persistent volumes for Oracle, is this example I will create a one volume to run Oracle one
+- Create the persistent volumes for Oracle, is this example I will create a one volume.
 ```
 kind: PersistentVolumeClaim
 apiVersion: v1
