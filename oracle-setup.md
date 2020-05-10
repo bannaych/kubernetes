@@ -14,7 +14,7 @@ My next blog will demonstrate the  power or Pure Storage snapshots and cloning t
 |Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|1.18
 
 ```
-kubectl get nodes -o wide
+# kubectl get nodes -o wide
 NAME      STATUS   ROLES    AGE    VERSION   INTERNAL-IP       EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
 master    Ready    master   4d4h   v1.18.2   192.168.111.231   <none>        Ubuntu 18.04.1 LTS   4.15.0-29-generic   docker://19.3.6
 worker1   Ready    <none>   4d4h   v1.18.2   192.168.111.232   <none>        Ubuntu 18.04.1 LTS   4.15.0-99-generic   docker://19.3.6
@@ -32,22 +32,14 @@ worker1   Ready    <none>   4d4h   v1.18.2   192.168.111.232   <none>        Ubu
 # helm repo add pure https://purestorage.github.io/helm-charts
 # helm repo update
 
+-- look for the new pure csi driver --
+
 # helm search repo pure-csi
 NAME         	CHART VERSION	APP VERSION	DESCRIPTION
 pure/pure-csi	1.2.0        	1.2.0      	A Helm chart for Pure Service Orchestrator CSI ...
 
+You can see we are using PSO version 1.2 or 5.2 
 ```
-
-- Confirm the new Pure Storage classes have been configured
-```
-kubectl get sc
-NAME         PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-pure         pure-csi      Delete          Immediate           true                   4d4h
-pure-block   pure-csi      Delete          Immediate           true                   4d4h
-pure-file    pure-csi      Delete          Immediate           true                   4d4h
-```
-
-
 - Download the Pure Storage values file which is used to configure connectivity to the FlashArray or FlashBlades
 ```
 wget https://raw.githubusercontent.com/purestorage/helm-charts/master/pure-csi/values.yaml
@@ -59,9 +51,30 @@ arrays:
     - MgmtEndPoint: "192.168.111.130"
       APIToken: "476d58bc-3c91-0d10-1b9e-0f31058c4621"
 ```
-- Create the PSO namespace
+- Create the PSO namespace ( Required for Helm 3 )
 ```
 # kubectl create namespace pso
+namespace/pso created
+```
+
+- Now we install PSO using the values file we created
+```
+# helm install pro-csi pure/pure-csi -f values.yaml --namespace pso
+NAME: pso-csi
+LAST DEPLOYEd: Fri 8 May 22:14:50 AEST 2020
+NAMESPACE: pso
+STATUS: deployed
+REVISION: 1
+TEST SUITE: none
+```
+
+- Confirm the new Pure Storage classes have been configured
+```
+kubectl get sc
+NAME         PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+pure         pure-csi      Delete          Immediate           true                   4d4h
+pure-block   pure-csi      Delete          Immediate           true                   4d4h
+pure-file    pure-csi      Delete          Immediate           true                   4d4h\
 ```
 
 In this example, we will use an separate Oracle namespace to configure Oracle
