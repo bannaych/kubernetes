@@ -1,5 +1,24 @@
 # Oracle Containers on Kubernetes and Pure Storage PSO
 
+PSO allow for smart provisioning of storage to one or many arrays, this provides administrator and developers the ability to  provision storage on demand with cloud like functionality, ease and flexibility.
+
+In this blog I will use Pure Storage Orchestrator ( PSO ) to automate the provisioning of volumes to Kubernetes which will then be used to create Oracle containers using persistent storage.  
+
+My next blog will demonstrate the  power or Pure Storage snapshots and cloning to rapidly create instant copies of the source Oracle database.
+
+# Environment
+
+|Role|FQDN|IP|OS|RAM|CPU|
+|----|----|----|----|----|----|
+|Master|master.localdomain.com|192.168.111.231|Ubuntu 18.04|5G|3|
+|Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|
+
+# Install PSO
+
+- Install helm ( 
+```
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+
 In this example, we will use an separate Oracle namespace to configure Oracle
 this is not mandatory, however it easier to manage when you have multiple application and pods running 
 on the same system
