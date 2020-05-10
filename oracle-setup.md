@@ -70,19 +70,39 @@ TEST SUITE: none
 
 - Confirm the new Pure Storage classes have been configured
 ```
-kubectl get sc
+# kubectl get sc
 NAME         PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
 pure         pure-csi      Delete          Immediate           true                   4d4h
 pure-block   pure-csi      Delete          Immediate           true                   4d4h
-pure-file    pure-csi      Delete          Immediate           true                   4d4h\
+pure-file    pure-csi      Delete          Immediate           true                   4d4h
+
+"the pure driver will be deprecated, so use the pure-block driver"
+
+```
+- Check for all the service running in the PSO namespace
+
+```
+# kubectl get all -n pso
+NAME                     READY   STATUS    RESTARTS   AGE
+pod/pure-csi-864dm       3/3     Running   0          3d6h
+pod/pure-provisioner-0   4/4     Running   0          3d6h
+
+NAME                       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)     AGE
+service/pro-csi-pure-csi   ClusterIP   10.96.217.49   <none>        12345/TCP   4d4h
+service/pure-provisioner   ClusterIP   10.96.125.41   <none>        12345/TCP   4d4h
+
+NAME                      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+daemonset.apps/pure-csi   1         1         1       1            1           <none>          4d4h
+
+NAME                                READY   AGE
+statefulset.apps/pure-provisioner   1/1     4d4h
 ```
 
-In this example, we will use an separate Oracle namespace to configure Oracle
-this is not mandatory, however it easier to manage when you have multiple application and pods running 
-on the same system
+
+# Configure the Oracle 12c Deployment 
 
 
-* Create the persistent volumes for Oracle, is this example I will create a data volume and log volume
+- Create the persistent volumes for Oracle, is this example I will create a one volume to run Oracle one
 ```
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -112,7 +132,7 @@ NAME                                       CAPACITY   ACCESS MODES   RECLAIM POL
 pvc-89bdc6ad-a5ba-4041-bb9c-09d0b73900c7   20Gi       RWO            Delete           Bound    ora/oralog        pure-block              28m
  ```
  
-* Create the Oracle namespace
+- Create the Oracle namespace
 ```
 # kubectl create namespace -n ora
 # kubectl get namespace ora
@@ -120,7 +140,7 @@ NAME   STATUS   AGE
 ora    Active   3h13m
 ```
 
-* Create Kubernets secret to include the docker login information
+- Create Kubernets secret to include the docker login information
 ```
 kubectl create secret docker-registry oracle --docker-server=docker.io --docker-username=bannaych --docker-password=PASSWORD --docker-email=bannaych@gmail.com -n ora
 ```
@@ -128,7 +148,7 @@ kubectl create secret docker-registry oracle --docker-server=docker.io --docker-
 In this example I am not using a configmap file. I have includes the oracle variables inside the main yaml file, however you can create
 a properties file if you prefer.
 
-* Crete and Start the database
+- Create and Start the database
 ```
 kubectl apply -f oracle.yaml
 deployment.apps/database configured
@@ -151,7 +171,7 @@ pso           pure-csi-mgl76                   3/3     Running   0          17h
 pso           pure-provisioner-0               4/4     Running   0          17h
 ```
 
-* Check the status of the Oracle build
+- Check the status of the Oracle build
 ```
 # kubectl logs database-7544cd4df7-d4hm4 -n ora
 
@@ -184,7 +204,7 @@ The command completed successfully
 DONE!
 ```
 
-* Log onto the worker node
+-  Log onto the worker node
 
 ```
 # docker ps|grep ora
@@ -194,7 +214,7 @@ b194d4dc3024        purestorage/k8s                            "/csi-server -end
 f351b6f9fe1b        purestorage/k8s                            "/csi-server -endpoi…"   18 hours ago        Up 18 hours                             k8s_pure-csi-container_pure-provisioner-0_pso_844495f7-42f9-43f4-b70b-28c8ce9749a2_0
 ```
 
-* log into the oracle container and check the persistent volume is mounted and Oracle has started
+- log into the oracle container and check the persistent volume is mounted and Oracle has started
 ```
 # docker exec -it e34d786e6a6b bash
 [oracle@database-7544cd4df7-d4hm4 /]$
@@ -239,11 +259,11 @@ database-7544cd4df7-d4hm4
 
 ```
 
-* Stop the database
+- Stop the database
 ```
 kubectl scale -n ora deployment database --replicas=0
 ```
-* start the instance
+- start the instance
 ```
 kubectl scale -n ora deployment database --replicas=1
 ```
