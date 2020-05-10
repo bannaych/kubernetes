@@ -13,15 +13,56 @@ My next blog will demonstrate the  power or Pure Storage snapshots and cloning t
 |Master|master.localdomain.com|192.168.111.231|Ubuntu 18.04|5G|3|1.18
 |Worker1|worker1.localdomain.com|192.168.111.232|Ubuntu 18.047|8G|4|1.18
 
+```
+# kubectl get nodes
+NAME      STATUS   ROLES    AGE    VERSION
+master    Ready    master   4d4h   v1.18.2
+worker1   Ready    <none>   4d4h   v1.18.2
+```
 # Install PSO
 
-- Install helm 3
+- Install helm 3 kubernetes package manager
 ```
 # curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 # ./get_helm.sh
 
 ```
+- Add the Pure Storage Repo
+```
+# helm repo add pure https://purestorage.github.io/helm-charts
+# helm repo update
 
+# helm search repo pure-csi
+NAME         	CHART VERSION	APP VERSION	DESCRIPTION
+pure/pure-csi	1.2.0        	1.2.0      	A Helm chart for Pure Service Orchestrator CSI ...
+
+```
+
+- Confirm the new Pure Storage classes have been configured
+```
+kubectl get sc
+NAME         PROVISIONER   RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+pure         pure-csi      Delete          Immediate           true                   4d4h
+pure-block   pure-csi      Delete          Immediate           true                   4d4h
+pure-file    pure-csi      Delete          Immediate           true                   4d4h
+```
+
+
+- Download the Pure Storage values file which is used to configure connectivity to the FlashArray or FlashBlades
+```
+wget https://raw.githubusercontent.com/purestorage/helm-charts/master/pure-csi/values.yaml
+```
+- Edit the values file with the FlashArray details
+```
+arrays:
+  FlashArrays:
+    - MgmtEndPoint: "192.168.111.130"
+      APIToken: "476d58bc-3c91-0d10-1b9e-0f31058c4621"
+```
+- Create the PSO namespace
+```
+# kubectl create namespace pso
+```
 
 In this example, we will use an separate Oracle namespace to configure Oracle
 this is not mandatory, however it easier to manage when you have multiple application and pods running 
