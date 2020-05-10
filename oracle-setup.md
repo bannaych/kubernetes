@@ -1,4 +1,4 @@
-# Oracle Persistent storage with Kubernetes
+# Oracle Containers on Kubernetes and Pure Storage PSO
 
 In this example, we will use an separate Oracle namespace to configure Oracle
 this is not mandatory, however it easier to manage when you have multiple application and pods running 
