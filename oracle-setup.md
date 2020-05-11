@@ -108,7 +108,6 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: oravol
-  namespace: ora
   labels:
     app: oracle12c
 spec:
@@ -118,31 +117,29 @@ spec:
   requests:
    storage: 20Gi
  storageClassName: pure-block
- ```
- ```
+ 
  # kubectl create -f oravol.yaml
  persistentvolumeclaim/oravol created
-
- 
-kubectl get pvc -n ora
-NAME     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-oralog   Bound    pvc-89bdc6ad-a5ba-4041-bb9c-09d0b73900c7   20Gi       RWO            pure-block     27m
-
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM             STORAGECLASS   REASON   AGE
-pvc-89bdc6ad-a5ba-4041-bb9c-09d0b73900c7   20Gi       RWO            Delete           Bound    ora/oralog        pure-block              28m
- ```
- 
-- Create the Oracle namespace
 ```
-# kubectl create namespace -n ora
-# kubectl get namespace ora
-NAME   STATUS   AGE
-ora    Active   3h13m
+- Confirm the PVC has been created
+```
+kubectl get pvc|grep oravol
+oravol    Bound    pvc-5601093c-b828-4255-8a85-5fe1aed2d166   20Gi       RWO            pure-block     3d15h
+
+kubectl get pv|grep oravol
+pvc-5601093c-b828-4255-8a85-5fe1aed2d166   20Gi       RWO            Delete           Bound    default/oravol    pure-block              3d15h
+
 ```
 
+- Check the volume has been created on the FlashArray
+
+ 
+ NOTE: In this example I have not created an Oracle namespace, however in production evviroments it'd good practive
+ to create a namespace for each application
+ 
 - Create Kubernets secret to include the docker login information
 ```
-kubectl create secret docker-registry oracle --docker-server=docker.io --docker-username=bannaych --docker-password=PASSWORD --docker-email=bannaych@gmail.com -n ora
+kubectl create secret docker-registry oracle --docker-server=docker.io --docker-username=bannaych --docker-password=PASSWORD --docker-email=bannaych@gmail.com 
 ```
 
 In this example I am not using a configmap file. I have includes the oracle variables inside the main yaml file, however you can create
@@ -154,26 +151,29 @@ kubectl apply -f oracle.yaml
 deployment.apps/database configured
 ```
 ```
-get pods --all-namespaces
-NAMESPACE     NAME                             READY   STATUS    RESTARTS   AGE
-kube-system   coredns-66bff467f8-hj6gp         1/1     Running   0          17h
-kube-system   coredns-66bff467f8-sjqqg         1/1     Running   0          17h
-kube-system   etcd-master                      1/1     Running   0          17h
-kube-system   kube-apiserver-master            1/1     Running   0          17h
-kube-system   kube-controller-manager-master   1/1     Running   0          17h
-kube-system   kube-flannel-ds-amd64-xtjg8      1/1     Running   0          17h
-kube-system   kube-flannel-ds-amd64-zppzb      1/1     Running   0          17h
-kube-system   kube-proxy-jtv9v                 1/1     Running   0          17h
-kube-system   kube-proxy-ztq2w                 1/1     Running   0          17h
-kube-system   kube-scheduler-master            1/1     Running   0          17h
-ora           database-7544cd4df7-d4hm4        1/1     Running   0          6s
-pso           pure-csi-mgl76                   3/3     Running   0          17h
-pso           pure-provisioner-0               4/4     Running   0          17h
+# kubectl get pods --all-namespaces
+NAMESPACE              NAME                                         READY   STATUS    RESTARTS   AGE
+default                database-67d9b8bd67-hnrtl                    1/1     Running   0          2d10h
+kube-system            coredns-66bff467f8-hj6gp                     1/1     Running   0          4d16h
+kube-system            coredns-66bff467f8-sjqqg                     1/1     Running   0          4d16h
+kube-system            etcd-master                                  1/1     Running   0          4d16h
+kube-system            kube-apiserver-master                        1/1     Running   0          4d16h
+kube-system            kube-controller-manager-master               1/1     Running   0          4d16h
+kube-system            kube-flannel-ds-amd64-xtjg8                  1/1     Running   0          4d16h
+kube-system            kube-flannel-ds-amd64-zppzb                  1/1     Running   2          4d16h
+kube-system            kube-proxy-jtv9v                             1/1     Running   2          4d16h
+kube-system            kube-proxy-ztq2w                             1/1     Running   0          4d16h
+kube-system            kube-scheduler-master                        1/1     Running   0          4d16h
+kube-system            kubernetes-dashboard-975499656-lx2tt         1/1     Running   0          2d11h
+kubernetes-dashboard   dashboard-metrics-scraper-6b4884c9d5-bnn9x   1/1     Running   0          2d10h
+kubernetes-dashboard   kubernetes-dashboard-7b544877d5-rmq77        1/1     Running   0          2d10h
+pso                    pure-csi-864dm                               3/3     Running   0          3d18h
+pso                    pure-provisioner-0                           4/4     Running   0          3d18h
 ```
 
 - Check the status of the Oracle build
 ```
-# kubectl logs database-7544cd4df7-d4hm4 -n ora
+# kubectl logs database-67d9b8bd67-hnrtl
 
 Starting /u01/app/oracle/product/12.2.0/dbhome_1/bin/tnslsnr: please wait...
 
@@ -194,7 +194,7 @@ Trace Level               off
 Security                  ON: Local OS Authentication
 SNMP                      OFF
 Listener Parameter File   /u01/app/oracle/product/12.2.0/dbhome_1/admin/ORCL/listener.ora
-Listener Log File         /u01/app/oracle/diag/tnslsnr/database-7544cd4df7-d4hm4/listener/alert/log.xml
+Listener Log File         /u01/app/oracle/diag/tnslsnr/d kubectl logs database-67d9b8bd67-hnrtl/listener/alert/log.xml
 Listening Endpoints Summary...
   (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521)))
   (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC1521)))
@@ -207,43 +207,61 @@ DONE!
 -  Log onto the worker node
 
 ```
-# docker ps|grep ora
-e34d786e6a6b        12a359cd0528                               "/home/oracle/setup/…"   31 minutes ago      Up 31 minutes                           k8s_database_database-7544cd4df7-d4hm4_ora_834ddc41-6416-4685-9961-b57903fa1dec_0
-7fd7682977dc        k8s.gcr.io/pause:3.2                       "/pause"                 31 minutes ago      Up 31 minutes                           k8s_POD_database-7544cd4df7-d4hm4_ora_834ddc41-6416-4685-9961-b57903fa1dec_0
-b194d4dc3024        purestorage/k8s                            "/csi-server -endpoi…"   18 hours ago        Up 18 hours                             k8s_pure-csi-container_pure-csi-mgl76_pso_ea88ab80-c662-4769-9f1e-8a099218af07_0
-f351b6f9fe1b        purestorage/k8s                            "/csi-server -endpoi…"   18 hours ago        Up 18 hours                             k8s_pure-csi-container_pure-provisioner-0_pso_844495f7-42f9-43f4-b70b-28c8ce9749a2_0
+docker ps
+CONTAINER ID        IMAGE                                      COMMAND                  CREATED             STATUS              PORTS               NAMES
+f4c2a4904845        12a359cd0528                               "/home/oracle/setup/…"   2 days ago          Up 2 days                               k8s_database_database-67d9b8bd67-hnrtl_default_ef55e8e6-5881-42a7-a1dc-1334d3534b9e_0
+85d440786ff5        k8s.gcr.io/pause:3.2                       "/pause"                 2 days ago          Up 2 days                               k8s_POD_database-67d9b8bd67-hnrtl_default_ef55e8e6-5881-42a7-a1dc-1334d3534b9e_0
+883fe2240f8a        quay.io/k8scsi/csi-resizer                 "/csi-resizer --csi-…"   3 days ago          Up 3 days                               k8s_csi-resizer_pure-provisioner-0_pso_e9016f25-a628-49ed-b914-51a056ac9cd5_0
+016844ac1651        quay.io/k8scsi/csi-snapshotter             "/csi-snapshotter --…"   3 days ago          Up 3 days                               k8s_csi-snapshotter_pure-provisioner-0_pso_e9016f25-a628-49ed-b914-51a056ac9cd5_0
+fba49a591a75        quay.io/k8scsi/csi-provisioner             "/csi-provisioner --…"   3 days ago          Up 3 days                               k8s_csi-provisioner_pure-provisioner-0_pso_e9016f25-a628-49ed-b914-51a056ac9cd5_0
+06eaefb14fb1        purestorage/k8s                            "/csi-server -endpoi…"   3 days ago          Up 3 days                               k8s_pure-csi-container_pure-provisioner-0_pso_e9016f25-a628-49ed-b914-51a056ac9cd5_0
+2f89ff9880e9        k8s.gcr.io/pause:3.2                       "/pause"                 3 days ago          Up 3 days                               k8s_POD_pure-provisioner-0_pso_e9016f25-a628-49ed-b914-51a056ac9cd5_0
+
 ```
 
 - log into the oracle container and check the persistent volume is mounted and Oracle has started
 ```
-# docker exec -it e34d786e6a6b bash
-[oracle@database-7544cd4df7-d4hm4 /]$
-[oracle@database-7544cd4df7-d4hm4 /]$
-[oracle@database-7544cd4df7-d4hm4 /]$ df -k
+# docker exec -it f4c2a4904845 bash
+[oracle@database-67d9b8bd67-hnrtl /]$
+[oracle@database-67d9b8bd67-hnrtl /]$
+[oracle@database-67d9b8bd67-hnrtl /]$ df -k
 Filesystem                                    1K-blocks     Used Available Use% Mounted on
-overlay                                        47797996 17731868  27608376  40% /
+overlay                                        47797996 17521468  27818776  39% /
 tmpfs                                             65536        0     65536   0% /dev
-tmpfs                                           4084204        0   4084204   0% /sys/fs/cgroup
-/dev/mapper/3624a9370a21265762db64ece000547bf  20961280  3990716  16970564  20% /ORCL
-tmpfs                                           4084204        0   4084204   0% /dev/shm
-/dev/sda5                                      47797996 17731868  27608376  40% /etc/hosts
-tmpfs                                           4084204       12   4084192   1% /run/secrets/kubernetes.io/serviceaccount
-tmpfs                                           4084204        0   4084204   0% /proc/acpi
-tmpfs                                           4084204        0   4084204   0% /proc/scsi
-tmpfs                                           4084204        0   4084204   0% /sys/firmware
+tmpfs                                           4084048        0   4084048   0% /sys/fs/cgroup
+/dev/mapper/3624a9370a21265762db64ece00054b1b  20961280  4480188  16481092  22% /ORCL
+/dev/sda5                                      47797996 17521468  27818776  39% /etc/hosts
+tmpfs                                           4084048        0   4084048   0% /dev/shm
+tmpfs                                           4084048       12   4084036   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                           4084048        0   4084048   0% /proc/acpi
+tmpfs                                           4084048        0   4084048   0% /proc/scsi
+tmpfs                                           4084048        0   4084048   0% /sys/firmware
+```
 
-#ps -ef|grep pmon
-oracle     174     1  0 01:30 ?        00:00:00 ora_pmon_ORCL
-oracle     946   921  0 02:02 pts/0    00:00:00 grep --color=auto pmon
+- Confirm the persistenet volume is being used
+Exit the container and log back into the worker node
+```
+run the lsblk command
+sdh                                   8:112  0    20G  0 disk
+└─3624a9370a21265762db64ece00054b1b 253:1    0    20G  0 mpath /var/lib/kubelet/pods/ef55e8e6-5881-42a7-a1dc-1334d3534b9e/volumes/kubernetes.io~csi/pvc-5601093c-b828-4255-8a85-5fe1aed2d166/mount
+
+we can see the /dev/mapper volume 00054b1b from the container has been mapped to the PV volume created earlier
+# kubectl get pv|grep oravol
+pvc-5601093c-b828-4255-8a85-5fe1aed2d166   20Gi       RWO            Delete           Bound    default/oravol    pure-block              3d15h
+```
+
+- Log back into the Container and confirm Oracle has stated and we can access the database
+```
+#$ ps -ef|grep pmon
+oracle      44     1  0 May08 ?        00:00:15 ora_pmon_ORCL
+oracle   11532 11469  0 00:41 pts/1    00:00:00 grep --color=auto pmon
+[oracle@database-67d9b8bd67-hnrtl /]$
 
 # cd $ORACLE_HOME
 
-[oracle@database-7544cd4df7-d4hm4 dbhome_1]$ sqlplus / as sysdba
-
-SQL*Plus: Release 12.2.0.1.0 Production on Thu May 7 02:03:47 2020
-
+[oracle@database-67d9b8bd67-hnrtl dbhome_1]$ sqlplus / as sysdba
+SQL*Plus: Release 12.2.0.1.0 Production on Mon May 11 00:42:18 2020
 Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-
 
 Connected to:
 Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
@@ -255,7 +273,8 @@ INSTANCE_NAME
 HOST_NAME
 ----------------------------------------------------------------
 ORCL
-database-7544cd4df7-d4hm4
+database-67d9b8bd67-hnrtl
+SQL>
 
 ```
 
