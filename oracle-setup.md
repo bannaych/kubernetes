@@ -6,39 +6,7 @@ In this blog I will use Pure Storage Orchestrator ( PSO ) to automate the provis
 
 My next blog will demonstrate the  power or Pure Storage snapshots and cloning to rapidly create instant copies of the source Oracle database.
 
-Let's log into the docker server and confirm the SQL Server container is running
-The sql4 docker container is running on docker volume sqldata1
-Let's log onto the FlashArray and confirm the volume and serial number.  ( S/N 168A )
 
-Let's log into the container and triple check, as you can see the mapper device ends in 168a
-
-Let's log in the SQL Server and create a new database called blogdemo,  This time I'll be doing this using the sqlcmd utility instead of SSMS - sqlcmd comes with the mssql-tools unixODBC-devel packages.
-
-Now let's create a new clone Docker volume called snapvol1 using the source docker volume sqldata1
-
-Let's have a look at the array to confirm the new snapvol1 volume has been created and note its serial number ( 7012 )
-
-Now that we have created our new container volume, let's use this volume to create a new docker container called sqlsnap    
-         NOTE: We will be using a new port mapping number of 1430:1433 as the source container is already using 1433:1433
-
-Let's have a look at the containers on our system now, two containers ( sql4 and sqlsnap )
-
-The moment of truth, let's log into the new sqlsnap SQL Server and confirm we have the correct data
-
-So Lets re-cap what we have done so far:
-Created a new clone volume of our original source docker volume
-Created a new container using the clone of the source volume
-Confirmed the clone was an exact copy of the source volume
-Now let's see how we can use Pure Storage Snapshots to refresh the clone container.
-First lets add some more data to the source database
-
-Let's log on to the array and take a snapshot of the source volume sqldata1 - This time we will do it from the command line ( CLI ) - 
-
-The snap name is called docker-docker-sqldata1.demo2, we will  use this snapshot to overwrite the sqlsnap container volume snapvol1. But first we need to stop the container, then refresh the target volume.
-
-Now let's start the container, and confirm our target volume has been refreshed from the source.
-
-We have seen how by leveraging the Pure Storage Docker Plugin we can create persistent volumes for SQL Server containers environments, we have also seen how using Pure Storage Snapshots we can clone and refresh these volumes. All the above steps can be fully automated using a variety of methods including CLI, Shell, Python, API, Ansible etc.. I have shown you the manual method to get a better understanding of how the technology works.
 
 # Environment
 
