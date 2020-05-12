@@ -6,6 +6,11 @@ In this blog I will use Pure Storage Orchestrator ( PSO ) to automate the provis
 
 My next blog will demonstrate the  power or Pure Storage snapshots and cloning to rapidly create instant copies of the source Oracle database.
 
+In my first blog https://bannaych.blogspot.com/2020/04/mssql-server-on-docker-with-pure.html I showed you how we can create SQL Server containers using the Pure Storage Docker plugin. In this blog I will show you how can leverage the Pure Storage Docker plugin to instantly create a clone volume from the source volume, then use Pure Storage crash consistent snapshots to refresh the clone volume.
+
+Crash consistent snapshots provide us with a point in time copy of the volume/database, because we use metadata pointers to the original blocks on disk, the snapshots are created instantly with no initial space consumption, then those snapshots can be used to refresh volumes or create new ones.
+
+The big advantage of using snapshots is that we no longer need to backup and restore large databases to provision and refresh TEST/DEV/UAT environments. In the world of DevOps being agile is imperative and Pure Storage space efficient snapshots are key to maximising productivity of database administrators and developers.
 # Environment
 
 |Role|FQDN|IP|OS|RAM|CPU|K8 Ver
