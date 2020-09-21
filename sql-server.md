@@ -17,6 +17,8 @@ MetalLB is a load-balancer implementation for bare metal Kubernetes clusters, us
 
 I already have an Ubuntu Cluster up and running so i wont be going through the install process in this blog
 
+- Lets check the cluster status
+
 ```
 root@k8master:~# kubectl get nodes
 NAME        STATUS   ROLES    AGE    VERSION
