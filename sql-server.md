@@ -181,6 +181,20 @@ address-pools:
   - 192.168.111.240-192.168.111.245
 ```
 
+Now if everything has worked correctly, I shoud have an external-IP assigned to my mssql-deployment
+```
+root@k8master:~# kubectl get svc
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)           AGE
+hollowdb           ClusterIP      10.111.175.138   <none>            3306/TCP          140d
+kubernetes         ClusterIP      10.96.0.1        <none>            443/TCP           140d
+mssql-deployment   LoadBalancer   10.99.155.157    192.168.111.240   31433:30402/TCP   45m
+```
+- As we can see from the above output, my mssql deployment how has a loadbalanced IP address assigned to it ( 192.168.111.240) which is from the range I specified
+
+Now I should be able to connect to my MSSQL database using the 192.168.111.240 IP and port 31433
+
+I'm using SQLPro for MSSQL on a MAC
+
 
 
 
