@@ -58,7 +58,7 @@ NAME                               READY   STATUS    RESTARTS   AGE
 mssql-deployment-df565f596-zkb87   1/1     Running   0          48s
 ```
 
-- Let have a closer look at that POD
+- Let have a closer look, as you can see, the POD has started on node K8worker2, its up and running and use the 2019-CU4-ubuntu-18.04 image
 
 ```
 root@k8master:~# kubectl describe pods mssql-deployment
@@ -92,32 +92,6 @@ Containers:
     Mounts:
       /var/opt/mssql from mssql-system (rw)
       /var/run/secrets/kubernetes.io/serviceaccount from default-token-kj8td (ro)
-Conditions:
-  Type              Status
-  Initialized       True
-  Ready             True
-  ContainersReady   True
-  PodScheduled      True
-Volumes:
-  mssql-system:
-    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
-    ClaimName:  pvc-sql-system
-    ReadOnly:   false
-  default-token-kj8td:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  default-token-kj8td
-    Optional:    false
-QoS Class:       BestEffort
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
-                 node.kubernetes.io/unreachable:NoExecute for 300s
-Events:
-  Type    Reason     Age        From                Message
-  ----    ------     ----       ----                -------
-  Normal  Scheduled  <unknown>  default-scheduler   Successfully assigned default/mssql-deployment-df565f596-zkb87 to k8worker2
-  Normal  Pulling    4m23s      kubelet, k8worker2  Pulling image "mcr.microsoft.com/mssql/server:2019-CU4-ubuntu-18.04"
-  Normal  Pulled     4m22s      kubelet, k8worker2  Successfully pulled image "mcr.microsoft.com/mssql/server:2019-CU4-ubuntu-18.04"
-  Normal  Created    4m22s      kubelet, k8worker2  Created container mssql
-  # Normal  Started    4m21s      kubelet, k8worker2  Started container mssql
+
 ```
 
