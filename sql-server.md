@@ -52,3 +52,11 @@ service/mssql-deployment created
 
 ```
 
+- Let check to make sure out POD is running
+
+```
+root@k8master:~# kubectl get pod
+NAME                               READY   STATUS    RESTARTS   AGE
+mssql-deployment-df565f596-zkb87   1/1     Running   0          48s
+```
+
