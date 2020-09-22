@@ -94,6 +94,39 @@ Containers:
       /var/run/secrets/kubernetes.io/serviceaccount from default-token-kj8td (ro)
 
 ```
+- Lets log onto workder node 2 and confirm container is running
+
+```
+CONTAINER ID        IMAGE                                      COMMAND                  CREATED             STATUS              PORTS               NAMES
+86b9292ec4c9        mcr.microsoft.com/mssql/server             "/opt/mssql/bin/perm…"   2 hours ago         Up 2 hours                              k8s_mssql_mssql-deployment-df565f596-nnctl_default_9b1076d6-bf4c-4c0a-a977-c4f65ce1a9a3_0
+
+```
+ - Lets connect to the container
+ 
+```
+root@k8worker2:~# docker exec -it 86b9292ec4c9 bash
+mssql@mssql-deployment-df565f596-nnctl:/$
+mssql@mssql-deployment-df565f596-nnctl:/$
+mssql@mssql-deployment-df565f596-nnctl:/$ df -k
+Filesystem                                    1K-blocks     Used Available Use% Mounted on
+overlay                                       102685624 18154400  79272064  19% /
+tmpfs                                             65536        0     65536   0% /dev
+tmpfs                                           4084140        0   4084140   0% /sys/fs/cgroup
+/dev/sda1                                     102685624 18154400  79272064  19% /etc/hosts
+shm                                               65536        0     65536   0% /dev/shm
+/dev/mapper/3624a9370a21265762db64ece00092e5c  10475520   197468  10278052   2% /var/opt/mssql
+tmpfs                                           4084140       12   4084128   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs                                           4084140        0   4084140   0% /proc/acpi
+tmpfs                                           4084140        0   4084140   0% /proc/scsi
+tmpfs                                           4084140        0   4084140   0% /sys/firmware
+
+mssql@mssql-deployment-df565f596-nnctl:/$ ps -ef|grep sql
+mssql        1     0  0 01:38 ?        00:00:00 /opt/mssql/bin/sqlservr
+mssql        9     1  1 01:38 ?        00:02:14 /opt/mssql/bin/sqlservr
+mssql     1344     0  0 03:49 pts/0    00:00:00 bash
+mssql     1356  1344  0 03:49 pts/0    00:00:00 ps -ef
+mssql     1357  1344  0 03:49 pts/0    00:00:00 grep sql
+```
 
 At this point I can connect to the database using the post specified the service yaml code ( 31433 ), It's a cluser wide port number however, I need to specify
 the worker node IP address, so if the pod moves to another I need to specify the other nodes IP address. A better way is to create a load-Balanced IP address which allows me to connec to one IP address regardless of which node the service is running on. This is where MetalLB comes into play.
