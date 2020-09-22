@@ -40,3 +40,15 @@ kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP    140d
 ```
 
 As you can see from the above output, we have no PODS and no SERVICES.
+
+- Now lets create a new SQL Server deployment
+
+```
+
+root@k8master:~# kubectl apply -f cbsql.yaml
+persistentvolumeclaim/pvc-sql-system unchanged
+deployment.apps/mssql-deployment configured
+service/mssql-deployment created
+
+```
+
