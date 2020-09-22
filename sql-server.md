@@ -125,3 +125,62 @@ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manife
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 
 ```
+
+Ok lets check to make sure metalLB is install, first lets check to make sure the namespace is created, as you call from the below output, we can see
+the metallb-system namespace has been created.
+
+```
+root@k8master:~# kubectl get ns
+NAME              STATUS   AGE
+default           Active   140d
+metallb-system    Active   12h
+oradb             Active   139d
+pso               Active   140d
+```
+
+Next we need to deloy the configuration, we will deploy this a configmap. Go to the configuration tab on the metallb web page
+select the Layer 2 configuration
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 192.168.111.240-192.168.111.245
+```
+
+- In the above configmap, I have confgured my Loadbalancer to use the addresses from 192.168.111.240 - 192.168.111.245, this means when the service starts
+it will grab an IP from that range and assign it to the LoadBalancer service.
+
+- So Lets create the configmap and have a look at it, as you can see, the configmap called config has been created with the address range I specified
+
+```
+root@k8master:~# kukectl create -f configmap
+configmap/config created
+
+root@k8master:~# kubectl describe configmap config -n metallb-system
+Name:         config
+Namespace:    metallb-system
+Labels:       <none>
+Annotations:  <none>
+
+Data
+====
+config:
+----
+address-pools:
+- name: default
+  protocol: layer2
+  addresses:
+  - 192.168.111.240-192.168.111.245
+```
+
+
+
+
