@@ -95,3 +95,25 @@ Containers:
 
 ```
 
+At this point I can connect to the database using the post specified the service yaml code ( 31433 ), It's a cluser wide port number however, I need to specify
+the worker node IP address, so if the pod moves to another I need to specify the other nodes IP address. A better way is to create a load-Balanced IP address which allows me to connec to one IP address regardless of which node the service is running on. This is where MetalLB comes into play.
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql-deployment
+spec:
+  selector:
+    app: mssql
+  ports:
+    - protocol: TCP
+      port: 31433
+      targetPort: 1433
+  type: LoadBalancer
+ ```
+ 
+ - Lets install and configure MetalLB.
+ 
+ 
+
