@@ -21,6 +21,12 @@ NAME      STATUS   ROLES    AGE    VERSION   INTERNAL-IP       EXTERNAL-IP   OS-
 master    Ready    master   4d4h   v1.18.2   192.168.111.231   <none>        Ubuntu 18.04.1 LTS   4.15.0-29-generic   docker://19.3.6
 worker1   Ready    <none>   4d4h   v1.18.2   192.168.111.232   <none>        Ubuntu 18.04.1 LTS   4.15.0-99-generic   docker://19.3.6
 ```
+```
+root in docker in ~ via ☕ v1.8.0
+❯ docker volume create --driver=pure:latest --opt size=100G --name=sqldemo --label=sqldemo
+sqldemo
+```
+
 # Install PSO
 
 - Install helm 3 kubernetes package manager
