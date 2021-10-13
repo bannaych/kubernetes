@@ -1,15 +1,19 @@
 
+# Overview
 In this blog I will show you how to use the MySQL Shell to manage and create a clustered database on an InnoDB MySQL cluster which has been provisioned using the Oracle MySQL Kubernetes Operato, and Portworx to provide the data management layer and persistent volumes
 
 This blog will not go into the details on how to setup Kubernetes, Portworx or the Operator, my Colleague Ron Ekins has written an excellent blog on the installation process. 
 
 https://ronekins.com/2021/08/31/getting-started-with-the-oracle-mysql-kubernetes-operator-and-portworx/
 
+
 # Environment
+```
 * Kubernetes 1.21
 * Portworx 2.8
 * MySQL operator installed https://github.com/mysql/mysql-operator
 * MySQL Shell
+```
 
 Lets check to make sure our operator is up and running
 
@@ -35,8 +39,10 @@ Note: because I don't have a load balancer on my kubernetes environment, I will 
 ![Screen Shot 2021-10-13 at 12 45 17 pm](https://user-images.githubusercontent.com/13579776/137117575-affab605-792a-4b1a-9b77-c0d43858deca.png)
 
 Lets get the IP addresses of the cluster PODS we want to connect to.
+```
 root@px-centk8s01 ~]# kubectl get pods -o wide
 10.244.1.44,45,46
+```
 
 ![Screen Shot 2021-10-13 at 12 53 05 pm](https://user-images.githubusercontent.com/13579776/137117760-0979a90f-e8ff-459c-8559-42295995ae95.png)
 
@@ -58,7 +64,7 @@ From the SQL prompt we can run any SQL command which you can run from a standard
 
 ![Screen Shot 2021-10-13 at 3 54 18 pm](https://user-images.githubusercontent.com/13579776/137118065-077653b0-0d72-4aac-8753-3db105166f82.png)
 
-Let me check which which cluster node we are on, then will create a new database called blog and confirm all the cluster nodes can see and read the database. The new blog database is now visible. We are on the mycluster-0
+Let's check which which cluster node we are on, then we will create a new database called blog and confirm all the cluster nodes can see and read the database. The new blog database is now visible. We are on the mycluster-0
 
 ![Screen Shot 2021-10-13 at 4 19 14 pm](https://user-images.githubusercontent.com/13579776/137118124-8f0c644d-3cbe-4897-ad69-d08ad619a623.png)
 
