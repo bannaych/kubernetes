@@ -1,7 +1,7 @@
 
-In this blog I will show you how to use the MySQL Shell to manage and create a clustered database on an InnoDB MySQL cluster which has been provisioned using the Oracle MySQL Kubernetes Operator.
+In this blog I will show you how to use the MySQL Shell to manage and create a clustered database on an InnoDB MySQL cluster which has been provisioned using the Oracle MySQL Kubernetes Operato, and Portworx to provide the data management layer and persistent volumes
 
-This blog will not go into the details on how to setup Kubernetes or Operator, my Colleague Ron Ekins has written an excellent blog on the installation process. 
+This blog will not go into the details on how to setup Kubernetes, Portworx or the Operator, my Colleague Ron Ekins has written an excellent blog on the installation process. 
 
 https://ronekins.com/2021/08/31/getting-started-with-the-oracle-mysql-kubernetes-operator-and-portworx/
 
